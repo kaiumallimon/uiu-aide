@@ -2,11 +2,11 @@ const userModel = require('../models/test.model');
 
 async function listUsers(req, res) {
   try {
-    const users = await userModel.getAllUsers();
+    const all_users = await userModel.getAllUsers();
     res.json({
       message: 'Users retrieved successfully',
-      totalUsers: users.length,
-      users: users
+      totalUsers: all_users.length,
+      users: all_users
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
