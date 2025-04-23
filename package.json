@@ -17,9 +17,12 @@
   },
   "homepage": "https://github.com/kaiumallimon/uiu-aide#readme",
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@supabase/supabase-js": "^2.49.4",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "langchain": "^0.3.23",
+    "weaviate-client": "^3.5.2"
   }
 }
