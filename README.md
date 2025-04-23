@@ -42,7 +42,7 @@ The AIDE system is built on a modular architecture that integrates LangChain's c
 ### Core Components
 
 1. **Authentication & User Management:**
-    - Handled via Supabase (Auth + PostgreSQL).
+    - Handled via Django's built-in authentication system.
     - Supports role-based access control (e.g., Admin, Student).
 
 2. **Agent Engine:**
@@ -103,11 +103,11 @@ The AIDE system is built on a modular architecture that integrates LangChain's c
     - Communicates with the backend via REST or GraphQL APIs.
 
 - **Backend:**
-    - Node.js-based backend using Express.js.
+    - Python Django-based backend using Django REST Framework (DRF).
     - Integrates LangChain for agent execution and RAG processing.
 
 - **Database:**
-    - Supabase for user management and agent configurations.
+    - PostgreSQL for user management and agent configurations.
     - Vector database for document retrieval.
 
-By leveraging LangChain's modular components and integrating external services, the AIDE system provides a comprehensive and adaptive solution for digital education.
+By leveraging LangChain's modular components and integrating Django's robust backend capabilities, the AIDE system provides a comprehensive and adaptive solution for digital education.
