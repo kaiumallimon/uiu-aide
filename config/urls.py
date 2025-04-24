@@ -24,5 +24,9 @@ urlpatterns = [
     # API endpoints
     path('api/users/',include('apps.test_users.routes.user_routes')),
 
-    path('api/auth/',include('apps.authentication.routes.auth_routes'))
+    path('api/auth/',include('apps.authentication.routes.auth_routes')),
+
+    path('api/admin/create-agent/',include("apps.admin.create_agent.routes.create_agent_routes")),
+
+    path('api/client/chat-with-agent/',include("apps.chat.routes.agent_chat_route")),
 ]

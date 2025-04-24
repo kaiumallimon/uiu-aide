@@ -27,6 +27,9 @@ SUPABASE_KEY = os.getenv('SUPABASE_ANON_KEY')
 WEAVIATE_URL = os.getenv('WEAVIATE_URL')
 WEAVIATE_API_KEY = os.getenv('WEAVIATE_API_KEY')
 
+# load gemini api key from environment variables
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
