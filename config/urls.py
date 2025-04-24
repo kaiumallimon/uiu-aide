@@ -23,4 +23,6 @@ urlpatterns = [
 
     # API endpoints
     path('api/users/',include('apps.test_users.routes.user_routes')),
+
+    path('api/auth/',include('apps.authentication.routes.auth_routes'))
 ]

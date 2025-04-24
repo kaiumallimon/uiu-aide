@@ -10,3 +10,7 @@ node_modules/
 
 # ignore all pycache folders
 **/__pycache__/
+
+
+# ignore db.sqlite3 file
+db.sqlite3
