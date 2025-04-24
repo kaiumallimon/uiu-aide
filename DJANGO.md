@@ -28,4 +28,7 @@ pip install httpx postgrest
 python manage.py migrate
 # python manage.py runserver
 python manage.py runserver 127.0.0.1:5000
+
+# install all depenencies:
+pip install -r requirements.txt
 ```
