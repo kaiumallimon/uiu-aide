@@ -3,3 +3,10 @@ node_modules/
 
 # ignore .env file
 .env
+
+# ignore .idea folder
+.idea/
+
+
+# ignore all pycache folders
+**/__pycache__/
