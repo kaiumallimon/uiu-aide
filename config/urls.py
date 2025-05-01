@@ -28,5 +28,7 @@ urlpatterns = [
 
     path('api/admin/create-agent/',include("apps.admin.create_agent.routes.create_agent_routes")),
 
-    path('api/client/chat-with-agent/',include("apps.chat.routes.agent_chat_route")),
+    # path('api/client/chat-with-agent/',include("apps.chat.routes.agent_chat_route")),
+
+    path('api/admin/train/', include("apps.admin.train_agent.routes.training_route")),
 ]

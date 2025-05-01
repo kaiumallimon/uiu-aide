@@ -14,27 +14,34 @@ class RegisterView(APIView):
 
         if serializer.is_valid():
             data = serializer.validated_data
-            try:
-                response = register(data['full_name'], data['email'], data['password'], data['role'])
 
-                if response is not None:
+            try:
+                # Call the updated register function
+                user_response = register(
+                    full_name=data['full_name'],
+                    email=data['email'],
+                    password=data['password'],
+                    role=data['role']
+                )
+
+                if user_response:
                     return Response(
                         {
                             "status": "success",
                             "message": "User registered successfully",
-                            "user": response
+                            "user": user_response
                         },
                         status=status.HTTP_201_CREATED
                     )
                 else:
-                    # got no response
                     return Response(
                         {
                             "status": "error",
-                            "message": "User registration failed",
+                            "message": "User registration failed at profile creation step.",
                         },
                         status=status.HTTP_400_BAD_REQUEST
                     )
+
             except Exception as e:
                 return Response(
                     {
@@ -44,6 +51,7 @@ class RegisterView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
+        # Validation failed
         return Response(
             {
                 "status": "error",

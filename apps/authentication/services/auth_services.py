@@ -4,37 +4,31 @@ from config.supabase.supabase_client import supabase
 # register function to complete registration process in supabase auth
 def register(full_name, email, password, role):
     try:
-        # Perform the sign-up process with the provided user details
-        response = supabase.auth.sign_up({ "email": email, "password": password, "options":{
-            "full_name": full_name,
-            "role": role
-        }})
+        # Step 1: Register user via Supabase Auth
+        response = supabase.auth.sign_up({
+            "email": email,
+            "password": password,
+        })
 
-
-        # Check for any errors in the response
-        if hasattr(response, 'error') and response.error:
+        # Check for sign-up error
+        if not response.user:
             print("Error creating user:", response.error.message)
             return None
 
-        # Parse the response to make it more usable
-        user_data = {}
-        for key, value in response.user:
-            user_data[key] = value
+        # Extract user ID from response
+        user_id = response.user.id  # This is the auth UID
 
-        # Print out the formatted user data for inspection
-        print("User data:", user_data)
+        # Step 2: Insert additional data (full_name and role) into the database
+        insert_response = supabase.table("profiles").insert({
+            "id": user_id,
+            "full_name": full_name,
+            "role": role
+        }).execute()
 
-        # If no error, return the user data
-        if 'user_metadata' in user_data:
-            return user_data['user_metadata']  # Return user metadata if available
-        else:
-            print("Unexpected response format:", response)
-            return None
+        return insert_response.data
 
     except Exception as e:
-        # Handle any exceptions during the registration process
-        raise Exception(f"Error creating user: {e}")
-
+        raise Exception(f"Error during registration: {e}")
 
 
 # login function to complete login process in supabase auth
