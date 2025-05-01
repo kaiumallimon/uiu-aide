@@ -1,36 +1,25 @@
 from typing import List, Dict
 
 
-def flatten_and_chunk_questions(questions: List[Dict[str, Dict[str, str]]], chunk_size: int = 500):
+def flatten_and_chunk_questions(questions: List[Dict[str, Dict[str, str]]], chunk_size: int = 500) -> List[str]:
     """
-    "flatten" means converting a nested structure (like a list of questions with subparts)
-    into a simple list of strings,
-    so that we can embed each string individually.
-
-    Embedding APIs usually expect a list of plain strings — not nested objects.
+    Flattens a list of questions with subparts and chunks them into smaller strings for embedding.
+    Each chunk will be up to `chunk_size` characters long.
     """
 
-    flattened_questions = []
-
-    # flatten the questions by extracting parts (a,b,c...)
-    for question in questions:
-        for part in question["parts"].values():
-            flattened_questions.append(part)
-
-    # chunk the flattened questions for embedding
     chunks = []
-    current_chunk = []
 
-    for question in flattened_questions:
-        # if adding the question exceeds the chunk size, save the current chunk and start a new one
-        if len(current_chunk) + len(question) > chunk_size:
-            chunks.append(current_chunk)
-            current_chunk = question
-        else:
-            current_chunk += " " + question
+    for question in questions:
+        for part_label, part_text in question.get("parts", {}).items():
+            clean_text = part_text.replace("\n", " ").strip()
 
-    # add the last chunk if it contains any content
-    if current_chunk:
-        chunks.append(current_chunk)
+            # If the part is small enough, add directly
+            if len(clean_text) <= chunk_size:
+                chunks.append(clean_text)
+            else:
+                # Split long part into smaller chunks
+                for i in range(0, len(clean_text), chunk_size):
+                    chunk = clean_text[i:i + chunk_size]
+                    chunks.append(chunk)
 
     return chunks

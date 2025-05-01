@@ -1,18 +1,21 @@
 import uuid
 from datetime import datetime
 from typing import List
-
+from langchain_community.vectorstores import Pinecone as PineconeVectorStore
+from langchain_core.documents import Document
+from apps.llm.gemini import embedding_model
 from config.supabase.supabase_client import supabase
+from config.pinecone_.pinecone_client import pinecone_index
 
 
-def save_training_data_to_db(
-    agent_id: str,
-    filename: str,
-    raw_text: str,
-    chunks: List[str],
-    embeddings: List[List[float]]
+def save_training_data_to_db_with_pinecone(
+        agent_id: str,
+        filename: str,
+        raw_text: str,
+        chunks: List[str],
+        embeddings: List[List[float]]
 ):
-    # Step 1: Create a new document entry
+    # Step 1: Insert raw document metadata to Supabase
     document_id = str(uuid.uuid4())
     created_at = datetime.now().isoformat()
 
@@ -25,28 +28,29 @@ def save_training_data_to_db(
     }
 
     doc_response = supabase.table("documents").insert(document_data).execute()
-    doc_result = doc_response.model_dump()
-    if doc_result.get("error"):
+
+    if hasattr(doc_response, 'error') and doc_response.error:
         raise Exception(f"Failed to insert document: {doc_response.error}")
 
-    # Step 2: Create embedding rows for each chunk
-    embedding_rows = []
-    for chunk, embedding in zip(chunks, embeddings):
-        if len(embedding) != 768:
-            raise ValueError(f"Embedding dimension mismatch: expected 768, got {len(embedding)}")
+    # Step 2: Prepare documents for Pinecone
+    documents = [
+        Document(
+            page_content=chunk,
+            metadata={
+                "document_id": document_id,
+                "agent_id": agent_id,
+                "filename": filename,
+                "text": chunk  # Important for retrieval
+            }
+        )
+        for chunk in chunks
+    ]
 
-        embedding_rows.append({
-            "id": str(uuid.uuid4()),
-            "document_id": document_id,
-            "chunk": chunk,
-            "embedding": embedding
-        })
+    # Step 3: Store embeddings in Pinecone
+    PineconeVectorStore.from_documents(
+        documents=documents,
+        embedding=embedding_model,
+        index_name="uiu-aide"
+    )
 
-    embed_response = supabase.table("embeddings").insert(embedding_rows).execute()
-    embed_result = embed_response.model_dump()
-    if embed_result.get("error"):
-        raise Exception(f"Failed to insert embeddings: {embed_response.error}")
-
-    return {
-        "document_id": document_id,
-    }
+    return {"document_id": document_id}

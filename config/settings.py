@@ -21,11 +21,15 @@ load_dotenv()
 # load supabase credentials from environment variables
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_ANON_KEY')
+DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
+DB_USER = os.getenv('DATABASE_USER')
+DB_HOST = os.getenv('DATABASE_HOST')
+DB_PORT = os.getenv('DATABASE_PORT')
 
 
-# load weaviate credentials from environment variables:
-WEAVIATE_URL = os.getenv('WEAVIATE_URL')
-WEAVIATE_API_KEY = os.getenv('WEAVIATE_API_KEY')
+# pinecone_ credentials
+PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
+PINECONE_ENVIRONMENT = os.getenv('PINECONE_ENVIRONMENT')
 
 # load gemini api key from environment variables
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
@@ -58,7 +62,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # custom apps
-    'apps.test_users.apps.TestUsersConfig',
     'apps.authentication.apps.AuthConfig',
 ]
 
