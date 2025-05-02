@@ -36,6 +36,7 @@ def train_agent(agent_id: str, pdf_file: UploadedFile) -> Dict[str, Any]:
         # Prepare metadata for each chunk
         metadata = {
             "question_id": chunk["question_id"],
+            "agent_id": agent_id,
             "trimester": header.get("trimester", ""),
             "course_code": header.get("course_code", ""),
             "course_title": header.get("course_title", ""),
