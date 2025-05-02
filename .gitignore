@@ -14,3 +14,7 @@ node_modules/
 
 # ignore db.sqlite3 file
 db.sqlite3
+
+
+# ignore virtual environment folder
+virtual_environment/

@@ -1,11 +1,10 @@
-import fitz  # PyMuPDF
+import fitz
 import re
 import json
 
-def extract_text_from_pdf(uploaded_file):
-    doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+def extract_text_from_pdf(file_obj):
+    doc = fitz.open(stream=file_obj.read(), filetype="pdf")
     return "\n".join(page.get_text() for page in doc)
-
 
 def extract_header(text):
     header_match = re.search(
@@ -27,30 +26,43 @@ def clean_text(text):
     return text
 
 def extract_questions(text):
-    # Split major questions by Q.1, Q2, or just 1. style
     main_q_blocks = re.split(r"\n\s*(?:Q\.?\s*\d+|\d+\.)\s*\n?", text)
     questions = []
 
-    for block in main_q_blocks[1:]:  # skip intro
-        q = {"parts": {}}
+    for q_idx, block in enumerate(main_q_blocks[1:], 1):  # skip intro
+        q = {"parts": {}, "index": q_idx}
 
-        # Match only top-level subparts (a)-(h) at line starts
         subparts = list(re.finditer(
-    r"^\s*\(?([a-hA-H])\)?\)\s+(.*?)(?=^\s*\(?[a-hA-H]\)?\)\s+|\Z)",
-    block, re.DOTALL | re.MULTILINE))
-
+            r"^\s*\(?([a-hA-H])\)?\)\s+(.*?)(?=^\s*\(?[a-hA-H]\)?\)\s+|\Z)",
+            block, re.DOTALL | re.MULTILINE))
 
         if subparts:
             for match in subparts:
                 key = match.group(1).lower()
-                val = re.sub(r"\[[^\]]+\]", "", match.group(2)).strip()  # remove mark tags like [3]
+                val = re.sub(r"\[[^\]]+\]", "", match.group(2)).strip()  # remove [x] marks
                 q["parts"][key] = re.sub(r"\s+", " ", val)
         else:
             clean_block = re.sub(r"\[[^\]]+\]", "", block).strip()
             if clean_block:
                 q["parts"]["a"] = re.sub(r"\s+", " ", clean_block)
+
         questions.append(q)
     return questions
+
+def create_chunked_output(header, questions):
+    chunks = []
+    for q in questions:
+        q_number = f"Q{q['index']}"
+        for key, part in q['parts'].items():
+            chunk = {
+                "trimester": header.get("trimester", ""),
+                "course_code": header.get("course_code", ""),
+                "course_title": header.get("course_title", ""),
+                "question_id": f"{q_number}({key})",
+                "content": part
+            }
+            chunks.append(chunk)
+    return chunks
 
 # # ---------- MAIN ----------
 # file_path = "CSE1111_Mid_222.pdf"  # Change to your PDF path
@@ -58,14 +70,7 @@ def extract_questions(text):
 # header = extract_header(text)
 # text = clean_text(text)
 # questions = extract_questions(text)
+# chunks = create_chunked_output(header, questions)
 #
-# output = {
-#     **header,
-#     "questions": questions
-# }
-#
-# # Save JSON
-# with open("parsed_exam.json", "w", encoding="utf-8") as f:
-#     json.dump(output, f, indent=2)
-#
-# print("✅ Done: Saved to parsed_exam.json")
+# # # Output as JSON (ready for embedding or storing into a vector DB)
+# print(json.dumps(chunks, indent=2))
