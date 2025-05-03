@@ -3,9 +3,13 @@ from rest_framework.views import APIView
 from .services.agent_creation_service import create_agent_service
 from rest_framework.response import Response
 from rest_framework import status
-
+from middlwares.auth_middleware import SupabaseJWTAuthentication
+from apps.authentication.permissions_ import IsAdmin
 
 class CreateAgentView(APIView):
+    authentication_classes = [SupabaseJWTAuthentication]
+    permission_classes = [IsAdmin]
+    
     def post(self, request):
         try:
             # Extract data from the request
