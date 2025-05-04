@@ -1,9 +1,11 @@
+import json
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from apps.llm.gemini import llm
 from .agent_retriever_service import get_relevant_documents_from_pinecone
 from config.supabase.supabase_client import supabase
 from langchain.schema import Document
+import re
 
 def get_system_prompt_from_supabase(agent_id: str) -> str | None:
     response = (
@@ -73,8 +75,28 @@ def temporary_chat_with_agent(user_input: str, agent_id: str):
         converted_documents.append(doc_dict)
 
     print("\nLLM Response:", response.content)
+
+    raw_content = response.content.strip()
+
+
+    # Remove code block markers
+    cleaned_content = re.sub(r"^```(?:json)?|```$", "", raw_content.strip(), flags=re.IGNORECASE | re.MULTILINE).strip()
+
+    # Heuristic check to decide if it's JSON
+    is_likely_json = cleaned_content.startswith("{") and cleaned_content.endswith("}")
+
+    if is_likely_json:
+        try:
+            parsed_response = json.loads(cleaned_content)
+        except json.JSONDecodeError as e:
+            print("Failed to parse response as JSON:", e)
+            parsed_response = {"error": "Invalid JSON format", "raw_response": raw_content}
+    else:
+        parsed_response = {"data": raw_content}
+
+
     return {
         # "formatted_prompt": formatted_prompt,
-        "response": response.content,
-        "vector_search_result": converted_documents,
+        "response": parsed_response,
+        # "vector_search_result": converted_documents,
     }
