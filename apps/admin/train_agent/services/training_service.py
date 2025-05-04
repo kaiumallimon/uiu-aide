@@ -1,7 +1,6 @@
 from typing import List, Dict, Any
 from django.core.files.uploadedfile import UploadedFile
 from utils.extract_pdf_text_and_chunk import extract_text_from_pdf, extract_questions, extract_header, clean_text, create_chunked_output
-from utils.flatten_and_chunk import flatten_and_chunk_questions
 from apps.llm.gemini import embedding_model
 from apps.admin.train_agent.services.store_embed_to_db import save_training_data_to_pinecone_db
 from config.supabase.supabase_client import supabase  # Still used for document metadata
