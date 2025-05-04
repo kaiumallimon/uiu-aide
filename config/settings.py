@@ -25,12 +25,12 @@ DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
 DB_USER = os.getenv('DATABASE_USER')
 DB_HOST = os.getenv('DATABASE_HOST')
 DB_PORT = os.getenv('DATABASE_PORT')
-
-
+SUPABASE_PROJECT_ID = os.getenv('SUPABASE_PROJECT_ID')
+SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 # pinecone_ credentials
 PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
 PINECONE_ENVIRONMENT = os.getenv('PINECONE_ENVIRONMENT')
-
+PINECONE_INDEX_NAME = "uiu-aide"
 # load gemini api key from environment variables
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 

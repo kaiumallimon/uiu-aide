@@ -3,8 +3,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .services.temp_chat_services import temporary_chat_with_agent
+from rest_framework.permissions import IsAuthenticated
+from middlwares.auth_middleware import SupabaseJWTAuthentication
 
 class TemporaryChatView(APIView):
+    
+    # authenticate first:
+    authentication_classes = [SupabaseJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    
     def post(self, request):
         try:
             # retrieve data from the request

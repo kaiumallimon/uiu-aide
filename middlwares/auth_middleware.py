@@ -1,38 +1,40 @@
-import requests
+# middlwares/auth_middleware.py
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from django.conf import settings
+from supabase import create_client, Client
+from apps.authentication.models.supabase_user import SupabaseUser
+from config import settings
 
-class SupabaseAuth(BaseAuthentication):
+class SupabaseJWTAuthentication(BaseAuthentication):
+    def __init__(self):
+        self.supabase_url = settings.SUPABASE_URL
+        self.supabase_key = settings.SUPABASE_KEY
+        self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
+
     def authenticate(self, request):
         auth_header = request.headers.get('Authorization')
-
-        if not auth_header or not auth_header.startswith('Bearer '):
+        if not auth_header:
             return None
-
-        token = auth_header.split(' ')[1]
-
+            
         try:
-            response = requests.get(
-                f"{settings.SUPABASE_URL}/auth/v1/user",
-                headers={
-                    "Authorization": f"Bearer {token}",
-                    "apikey": settings.SUPABASE_API_KEY
-                }
-            )
+            token = auth_header.split(' ')[1]
+            if not token:
+                return None
 
-            if response.status_code != 200:
-                raise AuthenticationFailed("Invalid or expired token")
-
-            user_data = response.json()
-            user_metadata = user_data.get("user_metadata", {})
-
-            user = {
-                "id": user_data["id"],
-                "email": user_data["email"],
-                "role": user_metadata.get("role", "student")  # default to student
-            }
-
-            return user, None
+            # Verify token
+            user = self.supabase.auth.get_user(token)
+            if not user:
+                raise AuthenticationFailed('Invalid token')
+                
+            user_id = user.user.id
+            
+            # Fetch profile
+            response = self.supabase.table("profiles").select("*").eq("id", user_id).execute()
+            if len(response.data) == 0:
+                raise AuthenticationFailed("User profile not found")
+                
+            # Wrap profile in SupabaseUser
+            return (SupabaseUser(response.data[0]), None)
+            
         except Exception as e:
             raise AuthenticationFailed(str(e))

@@ -3,8 +3,14 @@ from rest_framework import status
 import traceback
 from rest_framework.views import APIView
 from .services.training_service import train_agent
+from middlwares.auth_middleware import SupabaseJWTAuthentication
+from apps.authentication.permissions_ import IsAdmin
 
 class AgentTrainingView(APIView):
+    authentication_classes = [SupabaseJWTAuthentication]
+    permission_classes = [IsAdmin]
+
+
     def post(self, request):
         try:
             agent_id = request.data.get("agent_id")

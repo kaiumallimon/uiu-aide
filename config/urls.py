@@ -31,4 +31,6 @@ urlpatterns = [
     path('api/admin/train/', include("apps.admin.train_agent.routes.training_route")),
 
     path('api/user/tempchat/', include("apps.user.temp_chat.routes.temp_chat_route")),
+    
+    path('api/user/chat/', include("apps.user.chat.routes.chat_route")),
 ]
