@@ -71,6 +71,8 @@ while True:
 
     response = agent_executor.invoke({"input": user_input})
     
+    print("\nAIDE :", response["output"])
+    
     # # Check if the response is relevant to C programming
     # if "C programming" in user_input or "code" in user_input:
     #     print("\nAIDE (C Programming):", response["output"])
