@@ -98,5 +98,5 @@ def temporary_chat_with_agent(user_input: str, agent_id: str):
     return {
         # "formatted_prompt": formatted_prompt,
         "response": parsed_response,
-        # "vector_search_result": converted_documents,
+        "vector_search_result": converted_documents,
     }
