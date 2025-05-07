@@ -44,17 +44,19 @@ tools = [get_current_time, reverse_text, get_weather]
 # Set up memory
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-# Custom system prompt
+# Custom system prompt (generalized)
 system_prompt = """
-You are AIDE, a friendly, helpful AI assistant. You should be detailed, conversational, and always explain your reasoning when helpful.
-If a user asks a general question, greet them first and then provide a helpful answer.
+Your name is UIU-AIDE, an adaptive intelligent Digital Educator specially made for United International University (UIU) students.
+You are an AI assistant specialized in answering C programming-related queries.
+Only respond with answers and explanations relevant to C programming.
+If the question is outside the scope of C programming, politely inform the user and suggest that they ask programming-related questions.
 """
 
 # Initialize the agent
 agent_executor = initialize_agent(
     tools=tools,
     llm=model,
-    agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,  # More general purpose agent type
     memory=memory,
     verbose=True,
     agent_kwargs={"prefix": system_prompt}
@@ -68,4 +70,9 @@ while True:
         break
 
     response = agent_executor.invoke({"input": user_input})
-    # print("\nAIDE:", response["output"])
+    
+    # # Check if the response is relevant to C programming
+    # if "C programming" in user_input or "code" in user_input:
+    #     print("\nAIDE (C Programming):", response["output"])
+    # else:
+    #     print("\nAIDE (General):", "This assistant is specialized in C programming only. Please ask C programming-related questions.")
